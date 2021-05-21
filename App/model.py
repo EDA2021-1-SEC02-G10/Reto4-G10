@@ -38,12 +38,50 @@ los mismos.
 """
 
 # Construccion de modelos
+def newAnalyzer():
+    try:
+        analyzer = {
+                    'stops': None,
+                    'connections': None,
+                    'components': None,
+                    'paths': None
+                    }
 
+        analyzer['stops'] = m.newMap(numelements=14000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
+
+        analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
+                                              directed=True,
+                                              size=14000,
+                                              comparefunction=compareStopIds)
+        return analyzer
+    except Exception as exp:
+        error.reraise(exp, 'model:newAnalyzer')
 # Funciones para agregar informacion al catalogo
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
+
+
+
+#req 1
+def calcular_glusteres(landing_1,landing_2):
+    return None
+#req 2
+def calcular_landings():
+    return None
+#req 3
+def minima_paises(Pais_1,Pais_2):
+    return None
+#req 4
+def infraestructura_critica():
+    return None
+#req 5
+def inpacto_landing(landing):
+    return None
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

@@ -35,24 +35,63 @@ operación solicitada
 """
 
 def printMenu():
+    print("\n")
+    print("*******************************************")
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("1- Inicializar Analizador")
+    print("2- Cargar información")
+    print("3- Calcular la cantidad de clústeres: ")
+    print("4- Se desea encontrar el (los) landing point(s):")
+    print("5- Encontrar la ruta mínima entre dos paices: ")
+    print("6- identificar la infraestructura crítica: ")
+    print("7- Conocer el impacto que tendría el fallo de un determinado landing point: ")
+    print("0- Salir")
+    print("*******************************************")
 
 catalog = None
 
 """
 Menu principal
 """
-while True:
-    printMenu()
-    inputs = input('Seleccione una opción para continuar\n')
-    if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
+def thread_cycle():
+    while True:
+        printMenu()
+        inputs = input('Seleccione una opción para continuar\n')
+        if int(inputs[0]) == 1:
+            print("Cargando información de los archivos ....")
 
-    elif int(inputs[0]) == 2:
-        pass
+        elif int(inputs[0]) == 2:
+            print("\nInicializando....")
+            cont = controller.init()
+            
 
-    else:
-        sys.exit(0)
-sys.exit(0)
+        elif int(inputs[0]) == 3:                      #req 1
+            landing_1= input("Nombre del landing point 1")
+            landing_2= input("Nombre del landing point 2")
+            rta = controller.calcular_glusteres(cont,landing_1,landing_2)
+            
+        elif int(inputs[0]) == 4:                      #req 2
+            rta=controller.calcular_landings(cont)
+            
+        elif int(inputs[0]) == 5:                      #req 3
+            Pais_1 = input("Primer país: ")
+            Pais_2 = input("Segundo país: ")
+            rta = controller.minima_paises(cont, Pais_1,Pais_2)
+            
+        elif int(inputs[0]) == 6:                      #req 4
+            rta=controller.infraestructura_critica(cont)
+            
+        elif int(inputs[0]) == 7:                      #req 5
+            landing = input("Nombre del landing point:")
+            rta=controller.inpacto_landing(cont, landing)
+            
+        else:
+            sys.exit(0)
+    sys.exit(0)
+
+if __name__ == "__main__":
+    print(sys.getrecursionlimit())
+    threading.stack_size(67108864)  # 64MB stack
+    sys.setrecursionlimit(2 ** 20)
+    thread = threading.Thread(target=thread_cycle)
+    thread.start()

@@ -32,6 +32,25 @@ El controlador se encarga de mediar entre la vista y el modelo.
 # Inicialización del Catálogo de libros
 
 # Funciones para la carga de datos
+def init():
+    analyzer = model.newAnalyzer()
+    return analyzer
+#req 1
+def calcular_glusteres(landing_1,landing_2):
+    return model.calcular_glusteres(landing_1,landing_2)
+#req 2
+def calcular_landings():
+    return model.calcular_landings()
+#req 3
+def minima_paises(Pais_1,Pais_2):
+    return model.minima_paises(Pais_1,Pais_2)
+#req 4
+def infraestructura_critica():
+    return model.infraestructura_critica()
+#req 5
+def inpacto_landing(landing):
+    return model.inpacto_landing(landing)
+
 
 # Funciones de ordenamiento
 
