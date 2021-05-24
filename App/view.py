@@ -23,10 +23,14 @@
 import config as cf
 import sys
 import controller
+import threading
 from DISClib.ADT import list as lt
 assert cf
 
-
+servicefile_1 = 'landing_points.csv'
+servicefile_2 = 'connections.csv'
+servicefile_3 = 'countries.csv'
+initialStation = None
 """
 La vista se encarga de la interacción con el usuario
 Presenta el menu de opciones y por cada seleccion
@@ -59,10 +63,14 @@ def thread_cycle():
         inputs = input('Seleccione una opción para continuar\n')
         if int(inputs[0]) == 1:
             print("Cargando información de los archivos ....")
-
+            cont = controller.init()
         elif int(inputs[0]) == 2:
             print("\nInicializando....")
-            cont = controller.init()
+            controller.loadServices(cont, servicefile_1,servicefile_2,servicefile_3)
+            numedges = controller.totalConnections(cont)
+            numvertex = controller.totalStops(cont)
+            print('Numero de vertices: ' + str(numvertex))
+            print('Numero de arcos: ' + str(numedges))
             
 
         elif int(inputs[0]) == 3:                      #req 1

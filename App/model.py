@@ -41,17 +41,17 @@ los mismos.
 def newAnalyzer():
     try:
         analyzer = {
-                    'stops': None,
-                    'connections': None,
+                    'Vertices': None,
+                    'Arcos': None,
                     'components': None,
                     'paths': None
                     }
 
-        analyzer['stops'] = m.newMap(numelements=14000,
+        analyzer['Vertices'] = m.newMap(numelements=14000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
 
-        analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
+        analyzer['Arcos'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
                                               size=14000,
                                               comparefunction=compareStopIds)
@@ -59,11 +59,40 @@ def newAnalyzer():
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 # Funciones para agregar informacion al catalogo
+def addRouteConnections(analyzer):
+    """
+    Por cada vertice (cada estacion) se recorre la lista
+    de rutas servidas en dicha estación y se crean
+    arcos entre ellas para representar el cambio de ruta
+    que se puede realizar en una estación.
+    """
+    lststops = m.keySet(analyzer['stops'])
+    for key in lt.iterator(lststops):
+        lstroutes = m.get(analyzer['stops'], key)['value']
+        prevrout = None
+        for route in lt.iterator(lstroutes):
+            route = key + '-' + route
+            if prevrout is not None:
+                addConnection(analyzer, prevrout, route, 0)
+                addConnection(analyzer, route, prevrout, 0)
+            prevrout = route
 
+            
 # Funciones para creacion de datos
 
 # Funciones de consulta
+def totalStops(analyzer):
+    """
+    Retorna el total de estaciones (vertices) del grafo
+    """
+    return gr.numVertices(analyzer['connections'])
 
+
+def totalConnections(analyzer):
+    """
+    Retorna el total arcos del grafo
+    """
+    return gr.numEdges(analyzer['connections'])
 
 
 #req 1
@@ -86,3 +115,14 @@ def inpacto_landing(landing):
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+def compareStopIds(stop, keyvaluestop):
+    """
+    Compara dos estaciones
+    """
+    stopcode = keyvaluestop['key']
+    if (stop == stopcode):
+        return 0
+    elif (stop > stopcode):
+        return 1
+    else:
+        return -1
