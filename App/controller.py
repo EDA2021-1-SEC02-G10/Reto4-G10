@@ -42,12 +42,16 @@ def loadServices(cont):
     servidas en una misma estación.
     """
     servicesfile = cf.data_dir + 'connections.csv'
+    servicesfile_1 = cf.data_dir + 'landing_points.csv'
     input_file = csv.DictReader(open(servicesfile, encoding="utf-8-sig"),
+                                delimiter=",")
+    input_file_1 = csv.DictReader(open(servicesfile_1, encoding="utf-8"),
                                 delimiter=",")
     for cable in input_file:
         model.addRouteConnections(cont,cable)
+    for info in input_file_1:
+        model.addinfo(cont,info)
     return cont
-    
 
 
 # Funciones para la carga de datos
@@ -69,8 +73,8 @@ def estan_closter(analyzer,pais2):
     return model.estan_closter(analyzer,pais2)
 
 #req 2
-def calcular_landings():
-    return model.calcular_landings()
+def servedRoutes(analyzer):
+    return model.servedRoutes(analyzer)
 #req 3
 def minimumCostPaths(analyzer, initialStation):
     return model.minimumCostPaths(analyzer, initialStation)

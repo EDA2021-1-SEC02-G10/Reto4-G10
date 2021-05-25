@@ -29,12 +29,11 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
-from DISClib.ADT.graph import addEdge, gr
-from DISClib.ADT import map as m
-from DISClib.ADT import list as lt
+from DISClib.ADT.graph import addEdge, gr, indegree, vertices
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
+from DISClib.DataStructures import listiterator as it 
 assert cf
 
 """
@@ -49,7 +48,8 @@ def newAnalyzer():
                     'Vertices': None,
                     'Arcos': None,
                     'components': None,
-                    'paths': None
+                    'paths': None,
+                    'Ciudades': None 
                     }
 
         analyzer['Vertices'] = mp.newMap(numelements=14000,
@@ -60,10 +60,13 @@ def newAnalyzer():
                                               directed=True,
                                               size=14000,
                                               comparefunction=compareStopIds)
+        analyzer["Ciudades"] = mp.newMap()
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 # Funciones para agregar informacion al catalogo
+def addinfo(analyzer,info):
+    mp.put(analyzer["Ciudades"],int(info["landing_point_id"]),info)
 
 def addStop(analyzer, stopid):
     """
@@ -122,7 +125,7 @@ def connectedComponents(analyzer):
     analyzer['components'] = scc.KosarajuSCC(analyzer['Arcos'])
     return scc.connectedComponents(analyzer['components'])
 
-#para mirar si hay camino#
+#para mirar si hay camino# tambien se usa para el req 3
 
 def minimumCostPaths(analyzer, pais1):
     """
@@ -137,9 +140,24 @@ def estan_closter(analyzer,pais2):
     return rta
 
 #req 2
-def calcular_landings():
-    return None
+def servedRoutes(analyzer):
+    iterador = it.newIterator(gr.vertices(analyzer["Arcos"]))
+    lista = lt.newList()
+    total = 0
+    while it.hasNext(iterador):
+        vertice = it.next(iterador)
+        indegree = gr.indegree(analyzer["Arcos"],vertice)
+        outdegree = gr.outdegree(analyzer["Arcos"],vertice)
+        if indegree >= 1 and outdegree > 1:
+            total += 1
+            lt.addLast(lista,vertice)
+    final = lt.newList()
+    return total, lista
 #req 3
+
+def ruta(analyzer,pais1):
+    distancia_total = djk.distTo(analyzer["path"],pais1)
+
 
 #req 4
 def infraestructura_critica():

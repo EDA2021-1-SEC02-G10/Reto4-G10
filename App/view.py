@@ -80,8 +80,8 @@ def thread_cycle():
             print(landing_pints)
             
         elif int(inputs[0]) == 4:                      #req 2
-            rta=controller.calcular_landings(cont)
-            
+            max_edge=controller.servedRoutes(cont)
+            print(max_edge)
         elif int(inputs[0]) == 5:                      #req 3
             Pais_1 = input("Primer país: ")
             Pais_2 = input("Segundo país: ")
