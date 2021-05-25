@@ -24,12 +24,17 @@
  * Dario Correal - Version inicial
  """
 
-
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.ADT.graph import addEdge, gr
+from DISClib.ADT import map as m
+from DISClib.ADT import list as lt
+from DISClib.Algorithms.Graphs import scc
+from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Utils import error as error
 assert cf
 
 """
@@ -47,7 +52,7 @@ def newAnalyzer():
                     'paths': None
                     }
 
-        analyzer['Vertices'] = m.newMap(numelements=14000,
+        analyzer['Vertices'] = mp.newMap(numelements=14000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
 
@@ -59,23 +64,36 @@ def newAnalyzer():
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 # Funciones para agregar informacion al catalogo
-def addRouteConnections(analyzer):
+
+def addStop(analyzer, stopid):
+    """
+    Adiciona una estación como un vertice del grafo
+    """
+    try:
+        if not gr.containsVertex(analyzer['Arcos'], stopid):
+            gr.insertVertex(analyzer['Arcos'], stopid)
+        return analyzer
+    except Exception as exp:
+        error.reraise(exp, 'model:addstop')
+
+def addRouteConnections(analyzer,info):
     """
     Por cada vertice (cada estacion) se recorre la lista
     de rutas servidas en dicha estación y se crean
     arcos entre ellas para representar el cambio de ruta
     que se puede realizar en una estación.
     """
-    lststops = m.keySet(analyzer['stops'])
-    for key in lt.iterator(lststops):
-        lstroutes = m.get(analyzer['stops'], key)['value']
-        prevrout = None
-        for route in lt.iterator(lstroutes):
-            route = key + '-' + route
-            if prevrout is not None:
-                addConnection(analyzer, prevrout, route, 0)
-                addConnection(analyzer, route, prevrout, 0)
-            prevrout = route
+    grafo = analyzer["Arcos"]
+    llegada = info["destination"]
+    origen = info["origin"]
+    addStop(analyzer,origen)
+    addStop(analyzer,llegada)
+    distancia = 0
+    if info["cable_length"] != "n.a.":
+        final = ((info["cable_length"]).strip(" km")).split(",")
+        if len(final) > 1:
+            distancia = final[0]+ final[1]
+    addEdge(grafo, origen, llegada,int(distancia))
 
             
 # Funciones para creacion de datos
@@ -96,14 +114,23 @@ def totalConnections(analyzer):
 
 
 #req 1
-def calcular_glusteres(landing_1,landing_2):
-    return None
+def connectedComponents(analyzer):
+    """
+    Calcula los componentes conectados del grafo
+    Se utiliza el algoritmo de Kosaraju
+    """
+    analyzer['components'] = scc.KosarajuSCC(analyzer['Arcos'])
+    return scc.connectedComponents(analyzer['components'])
+
+def estan_closter(analyzer, pais1, pais2):
+    rta = scc.stronglyConnected(analyzer["Arcos"],pais1,pais2)
+    return rta
+
 #req 2
 def calcular_landings():
     return None
 #req 3
-def minima_paises(Pais_1,Pais_2):
-    return None
+
 #req 4
 def infraestructura_critica():
     return None
