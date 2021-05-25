@@ -27,9 +27,9 @@ import threading
 from DISClib.ADT import list as lt
 assert cf
 
-servicefile_1 = 'landing_points.csv'
-servicefile_2 = 'connections.csv'
-servicefile_3 = 'countries.csv'
+servicefile_landing = 'landing_points.csv'
+servicefile_connections = 'connections.csv'
+servicefile_countries = 'countries.csv'
 initialStation = None
 """
 La vista se encarga de la interacción con el usuario
@@ -66,17 +66,18 @@ def thread_cycle():
             cont = controller.init()
         elif int(inputs[0]) == 2:
             print("\nInicializando....")
-            controller.loadServices(cont, servicefile_1,servicefile_2,servicefile_3)
-            numedges = controller.totalConnections(cont)
-            numvertex = controller.totalStops(cont)
-            print('Numero de vertices: ' + str(numvertex))
-            print('Numero de arcos: ' + str(numedges))
-            
+            controller.loadServices(cont)            
 
         elif int(inputs[0]) == 3:                      #req 1
-            landing_1= input("Nombre del landing point 1")
-            landing_2= input("Nombre del landing point 2")
-            rta = controller.calcular_glusteres(cont,landing_1,landing_2)
+            landing_1= input("Nombre del landing point 1:")
+            landing_2= input("Nombre del landing point 2:")
+            clusteres = controller.connectedComponents(cont)
+            controller.minimumCostPaths(cont, landing_1)
+            landing_pints = controller.estan_closter(cont,landing_2)
+            print("hay estos clusteres:")
+            print(clusteres)
+            print("si hay landing pints que estan en el mismo cluster:")  
+            print(landing_pints)
             
         elif int(inputs[0]) == 4:                      #req 2
             rta=controller.calcular_landings(cont)
@@ -84,7 +85,7 @@ def thread_cycle():
         elif int(inputs[0]) == 5:                      #req 3
             Pais_1 = input("Primer país: ")
             Pais_2 = input("Segundo país: ")
-            rta = controller.minima_paises(cont, Pais_1,Pais_2)
+            
             
         elif int(inputs[0]) == 6:                      #req 4
             rta=controller.infraestructura_critica(cont)

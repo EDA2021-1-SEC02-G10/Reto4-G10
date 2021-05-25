@@ -32,7 +32,7 @@ El controlador se encarga de mediar entre la vista y el modelo.
 # Inicialización del Catálogo de libros
 
 
-def loadServices(cont, servicefile_1,servicefile_2,servicefile_3):
+def loadServices(cont):
     """
     Carga los datos de los archivos CSV en el modelo.
     Se crea un arco entre cada par de estaciones que
@@ -41,35 +41,43 @@ def loadServices(cont, servicefile_1,servicefile_2,servicefile_3):
     addRouteConnection crea conexiones entre diferentes rutas
     servidas en una misma estación.
     """
-    servicesfile = cf.data_dir + servicesfile
-    input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
+    servicesfile = cf.data_dir + 'connections.csv'
+    input_file = csv.DictReader(open(servicesfile, encoding="utf-8-sig"),
                                 delimiter=",")
-    lastservice = None
-    for service in input_file:
-        if lastservice is not None:
-            sameservice = lastservice['ServiceNo'] == service['ServiceNo']
-            samedirection = lastservice['Direction'] == service['Direction']
-            samebusStop = lastservice['BusStopCode'] == service['BusStopCode']
-            if sameservice and samedirection and not samebusStop:
-                model.addStopConnection(analyzer, lastservice, service)
-        lastservice = service
-    model.addRouteConnections(analyzer)
-    return analyzer
+    for cable in input_file:
+        model.addRouteConnections(cont,cable)
+    return cont
+    
 
 
 # Funciones para la carga de datos
 def init():
     analyzer = model.newAnalyzer()
     return analyzer
+
 #req 1
-def calcular_glusteres(landing_1,landing_2):
-    return model.calcular_glusteres(landing_1,landing_2)
+def connectedComponents(analyzer):
+    """
+    Numero de componentes fuertemente conectados
+    """
+    return model.connectedComponents(analyzer)
+
+def minimumCostPaths(analyzer, pais1):
+    return model.estan_closter(analyzer, pais1)
+
+def estan_closter(analyzer,pais2):
+    return model.estan_closter(analyzer,pais2)
+
 #req 2
 def calcular_landings():
     return model.calcular_landings()
 #req 3
-def minima_paises(Pais_1,Pais_2):
-    return model.minima_paises(Pais_1,Pais_2)
+def minimumCostPaths(analyzer, initialStation):
+    return model.minimumCostPaths(analyzer, initialStation)
+def hasPath(analyzer, destStation):
+    return model.hasPath(analyzer, destStation)
+def minimumCostPath(analyzer, destStation):
+    return model.minimumCostPath(analyzer, destStation)
 #req 4
 def infraestructura_critica():
     return model.infraestructura_critica()

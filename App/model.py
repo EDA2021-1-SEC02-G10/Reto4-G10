@@ -122,8 +122,18 @@ def connectedComponents(analyzer):
     analyzer['components'] = scc.KosarajuSCC(analyzer['Arcos'])
     return scc.connectedComponents(analyzer['components'])
 
-def estan_closter(analyzer, pais1, pais2):
-    rta = scc.stronglyConnected(analyzer["Arcos"],pais1,pais2)
+#para mirar si hay camino#
+
+def minimumCostPaths(analyzer, pais1):
+    """
+    Calcula los caminos de costo mínimo desde la estacion initialStation
+    a todos los demas vertices del grafo
+    """
+    analyzer['paths'] = djk.Dijkstra(analyzer['Arcos'], pais1)
+    return analyzer
+
+def estan_closter(analyzer,pais2):
+    rta = djk.hasPathTo(analyzer["paths"],pais2)
     return rta
 
 #req 2
