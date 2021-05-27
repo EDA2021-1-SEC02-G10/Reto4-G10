@@ -66,18 +66,20 @@ def thread_cycle():
             cont = controller.init()
         elif int(inputs[0]) == 2:
             print("\nInicializando....")
-            controller.loadServices(cont)            
+            controller.loadServices(cont)          
 
         elif int(inputs[0]) == 3:                      #req 1
-            landing_1= input("Nombre del landing point 1:")
-            landing_2= input("Nombre del landing point 2:")
+            landing_1= input("Nombre del landing point 1 (Ejem. Redondo Beach- 4992):")
+            landing_2= input("Nombre del landing point 2 (Ejem. Vung Tau-6013):")
             clusteres = controller.connectedComponents(cont)
             controller.minimumCostPaths(cont, landing_1)
             landing_pints = controller.estan_closter(cont,landing_2)
-            print("hay estos clusteres:")
-            print(clusteres)
-            print("si hay landing pints que estan en el mismo cluster:")  
-            print(landing_pints)
+            print("")
+            print("Número total de clústeres presentes en la red: " + str(clusteres))
+            if landing_pints:
+                print("Los dos landing points están en el mismo clúster")  
+            else:
+                print(" los dos landing points NO están en el mismo clúster")
             
         elif int(inputs[0]) == 4:                      #req 2
             max_edge=controller.servedRoutes(cont)
