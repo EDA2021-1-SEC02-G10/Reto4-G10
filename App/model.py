@@ -33,7 +33,8 @@ from DISClib.ADT.graph import addEdge, gr, indegree, vertices
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
-from DISClib.DataStructures import listiterator as it 
+from DISClib.DataStructures import listiterator as it
+from DISClib.ADT import map as m
 assert cf
 
 """
@@ -60,13 +61,15 @@ def newAnalyzer():
                                               directed=True,
                                               size=14000,
                                               comparefunction=compareStopIds)
-        analyzer["Ciudades"] = mp.newMap()
+        analyzer["Ciudades"] = m.newMap()
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 # Funciones para agregar informacion al catalogo
 def addinfo(analyzer,info):
-    mp.put(analyzer["Ciudades"],int(info["landing_point_id"]),info)
+    nombre = str(info["name"]).split(",")
+    nombre = str(nombre[0])
+    mp.put(analyzer["Ciudades"],nombre,int(info["landing_point_id"]))
 
 def addStop(analyzer, stopid):
     """
@@ -132,11 +135,16 @@ def minimumCostPaths(analyzer, pais1):
     Calcula los caminos de costo mínimo desde la estacion initialStation
     a todos los demas vertices del grafo
     """
-    analyzer['paths'] = djk.Dijkstra(analyzer['Arcos'], pais1)
+    Entry1 = m.get(analyzer["Ciudades"], pais1)
+    Pais_id = me.getValue(Entry1)
+    analyzer['paths'] = djk.Dijkstra(analyzer['Arcos'], str(Pais_id))
     return analyzer
+    
 
 def estan_closter(analyzer,pais2):
-    rta = djk.hasPathTo(analyzer["paths"],pais2)
+    Entry1 = m.get(analyzer["Ciudades"], pais2)
+    Pais_id = me.getValue(Entry1)
+    rta = djk.hasPathTo(analyzer["paths"],str(Pais_id))
     return rta
 
 #req 2
@@ -160,7 +168,8 @@ def ruta(analyzer,pais1):
 
 
 #req 4
-def infraestructura_critica():
+def infraestructura_critica(analyzer):
+
     return None
 #req 5
 def inpacto_landing(landing):

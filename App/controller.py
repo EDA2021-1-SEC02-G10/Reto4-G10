@@ -83,7 +83,7 @@ def hasPath(analyzer, destStation):
 def minimumCostPath(analyzer, destStation):
     return model.minimumCostPath(analyzer, destStation)
 #req 4
-def infraestructura_critica():
+def infraestructura_critica(analyzer):
     return model.infraestructura_critica()
 #req 5
 def inpacto_landing(landing):
