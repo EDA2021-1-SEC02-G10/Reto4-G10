@@ -50,7 +50,9 @@ def loadServices(cont):
     for cable in input_file:
         model.addRouteConnections(cont,cable)
     for info in input_file_1:
-        model.addinfo(cont,info)
+        model.addinfo_landing(cont,info)
+        model.addinfo_ciudad(cont,info)
+        model.addinfo_codigo(cont,info)
     return cont
 
 

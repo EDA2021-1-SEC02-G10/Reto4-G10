@@ -187,12 +187,13 @@ def remove(map, key):
     try:
         hash = hashValue(map, key)
         bucket = lt.getElement(map['table'], hash)
-        if (bucket is not None):
-            pos = lt.isPresent(bucket, key)
-            if pos > 0:
-                lt.deleteElement(bucket, pos)
-                map['size'] -= 1
-        return map
+        pos = lt.isPresent(bucket, key)
+        if pos > 0:
+            lt.deleteElement(bucket, pos)
+            map['size'] -= 1
+            return map
+        else:
+            return None
     except Exception as exp:
         error.reraise(exp, 'Chain:remove')
 
@@ -304,10 +305,9 @@ def rehash(map):
         map['capacity'] = capacity
         for pos in range(1, lt.size(oldtable)+1):
             bucket = lt.getElement(oldtable, pos)
-            if (lt.size(bucket) > 0):
-                for posbucket in range(1, lt.size(bucket)+1):
-                    entry = lt.getElement(bucket, posbucket)
-                    put(map, entry['key'], entry['value'])
+            for posbucket in range(1, lt.size(bucket)+1):
+                entry = lt.getElement(bucket, posbucket)
+                put(map, entry['key'], entry['value'])
         return map
     except Exception as exp:
         error.reraise(exp, "Chain:rehash")

@@ -24,6 +24,7 @@
  * Dario Correal - Version inicial
  """
 
+from DISClib.ADT.indexminpq import contains
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -34,7 +35,6 @@ from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 from DISClib.DataStructures import listiterator as it
-from DISClib.ADT import map as m
 assert cf
 
 """
@@ -50,7 +50,9 @@ def newAnalyzer():
                     'Arcos': None,
                     'components': None,
                     'paths': None,
-                    'Ciudades': None 
+                    'landing_points': None,
+                    'paises_nombre':None,
+                    'paises_codigos':None
                     }
 
         analyzer['Vertices'] = mp.newMap(numelements=14000,
@@ -61,15 +63,26 @@ def newAnalyzer():
                                               directed=True,
                                               size=14000,
                                               comparefunction=compareStopIds)
-        analyzer["Ciudades"] = m.newMap()
+        analyzer["landing_points"] = mp.newMap()
+        analyzer["paises_nombre"] = mp.newMap()
+        analyzer["paises_codigos"] = mp.newMap()
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 # Funciones para agregar informacion al catalogo
-def addinfo(analyzer,info):
+
+def addinfo_landing(analyzer,info):
     nombre = str(info["name"]).split(",")
-    nombre = str(nombre[0])
-    mp.put(analyzer["Ciudades"],nombre,int(info["landing_point_id"]))
+    nombre_landing = str(nombre[0])
+    mp.put(analyzer["landing_points"],nombre_landing,info)
+
+def addinfo_ciudad(analyzer,info):
+    nombre = str(info["name"]).split(",")
+    nombre_landing = str(nombre[-1])
+    mp.put(analyzer["paises_nombre"],nombre_landing,info)
+
+def addinfo_codigo(analyzer,info):
+    mp.put(analyzer["paises_codigos"],int(info["landing_point_id"]),info)
 
 def addStop(analyzer, stopid):
     """
@@ -135,19 +148,20 @@ def minimumCostPaths(analyzer, pais1):
     Calcula los caminos de costo mínimo desde la estacion initialStation
     a todos los demas vertices del grafo
     """
-    Entry1 = m.get(analyzer["Ciudades"], pais1)
+    Entry1 = mp.get(analyzer["landing_points"], pais1)
     Pais_id = me.getValue(Entry1)
-    analyzer['paths'] = djk.Dijkstra(analyzer['Arcos'], str(Pais_id))
+    analyzer['paths'] = djk.Dijkstra(analyzer['Arcos'], str(Pais_id["landing_point_id"]))
     return analyzer
     
 
 def estan_closter(analyzer,pais2):
-    Entry1 = m.get(analyzer["Ciudades"], pais2)
+    Entry1 = mp.get(analyzer["landing_points"], pais2)
     Pais_id = me.getValue(Entry1)
-    rta = djk.hasPathTo(analyzer["paths"],str(Pais_id))
+    rta = djk.hasPathTo(analyzer["paths"],str(Pais_id["landing_point_id"]))
     return rta
 
 #req 2
+
 def servedRoutes(analyzer):
     iterador = it.newIterator(gr.vertices(analyzer["Arcos"]))
     lista = lt.newList()
@@ -160,7 +174,15 @@ def servedRoutes(analyzer):
             total += 1
             lt.addLast(lista,vertice)
     final = lt.newList()
-    return total, lista
+    iterador_1 = it.newIterator(lista)
+    while it.hasNext(iterador_1):
+        elemento = it.next(iterador_1)
+        if mp.contains(analyzer["paises_codigos"]):
+            #print(elemento)
+            pareja = mp.get(analyzer["paises_codigos"],elemento)
+            valor = me.getValue(pareja)
+            lt.addLast(final,valor)
+    return final
 #req 3
 
 def ruta(analyzer,pais1):
@@ -169,8 +191,9 @@ def ruta(analyzer,pais1):
 
 #req 4
 def infraestructura_critica(analyzer):
-
-    return None
+    prim = p.PrimMST(analyzer["Arcos"])
+    minimos = lt.size(prim)
+    return minimos
 #req 5
 def inpacto_landing(landing):
     return None
