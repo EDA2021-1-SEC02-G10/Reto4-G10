@@ -24,7 +24,6 @@
  * Dario Correal - Version inicial
  """
 
-from DISClib.ADT.indexminpq import contains
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -82,7 +81,7 @@ def addinfo_ciudad(analyzer,info):
     mp.put(analyzer["paises_nombre"],nombre_landing,info)
 
 def addinfo_codigo(analyzer,info):
-    mp.put(analyzer["paises_codigos"],int(info["landing_point_id"]),info)
+    mp.put(analyzer["paises_codigos"],str(info["landing_point_id"]),info)
 
 def addStop(analyzer, stopid):
     """
@@ -177,12 +176,12 @@ def servedRoutes(analyzer):
     iterador_1 = it.newIterator(lista)
     while it.hasNext(iterador_1):
         elemento = it.next(iterador_1)
-        if mp.contains(analyzer["paises_codigos"]):
-            #print(elemento)
-            pareja = mp.get(analyzer["paises_codigos"],elemento)
-            valor = me.getValue(pareja)
-            lt.addLast(final,valor)
-    return final
+        pareja = mp.get(analyzer["paises_codigos"],elemento)
+        valor = me.getValue(pareja)
+        lt.addLast(final,valor["id"])
+        lt.addLast(final,valor["name"])
+    return total,final
+
 #req 3
 
 def ruta(analyzer,pais1):
@@ -191,7 +190,7 @@ def ruta(analyzer,pais1):
 
 #req 4
 def infraestructura_critica(analyzer):
-    prim = p.PrimMST(analyzer["Arcos"])
+    prim = P.PrimMST(analyzer["Arcos"])
     minimos = lt.size(prim)
     return minimos
 #req 5

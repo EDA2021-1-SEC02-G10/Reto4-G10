@@ -84,7 +84,10 @@ def thread_cycle():
             
         elif int(inputs[0]) == 4:                      #req 2
             max_edge=controller.servedRoutes(cont)
-            print(max_edge)
+            print("El total de cables conectados a dichos landiing points son:")
+            print(max_edge[0])
+            print("lista de landing points")
+            print(max_edge[1])
         elif int(inputs[0]) == 5:                      #req 3
             Pais_1 = input("Primer país: ")
             Pais_2 = input("Segundo país: ")
