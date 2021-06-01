@@ -23,25 +23,25 @@
  *
  * Dario Correal - Version inicial
  """
-
+ 
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
-from DISClib.Algorithms.Sorting import mergesort as merge
 from DISClib.ADT.graph import addEdge, gr, indegree, vertices
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Sorting import mergesort as merge
 from DISClib.Utils import error as error
 from DISClib.DataStructures import listiterator as it
 assert cf
-
+ 
 """
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
 los mismos.
 """
-
+ 
 # Construccion de modelos
 def newAnalyzer():
     try:
@@ -54,11 +54,11 @@ def newAnalyzer():
                     'paises_nombre':None,
                     'paises_codigos':None
                     }
-
+ 
         analyzer['Vertices'] = mp.newMap(numelements=14000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
-
+ 
         analyzer['Arcos'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
                                               size=14000,
@@ -70,21 +70,20 @@ def newAnalyzer():
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 # Funciones para agregar informacion al catalogo
-
+ 
 def addinfo_landing(analyzer,info):
     nombre = str(info["name"]).split(",")
     nombre_landing = str(nombre[0])
     mp.put(analyzer["landing_points"],nombre_landing,info)
-
+ 
 def addinfo_ciudad(analyzer,info):
     nombre = str(info["name"]).split(",")
     nombre_pais = str(nombre[-1])
-    mp.put(analyzer["paises_nombre"],str(info["landing_point_id"]),nombre_pais)
-
+    mp.put(analyzer["paises_nombre"],nombre_pais,str(info["landing_point_id"]))
+ 
 def addinfo_codigo(analyzer,info):
     mp.put(analyzer["paises_codigos"],str(info["landing_point_id"]),info)
-
-
+ 
 def addStop(analyzer, stopid):
     """
     Adiciona una estación como un vertice del grafo
@@ -95,7 +94,7 @@ def addStop(analyzer, stopid):
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:addstop')
-
+ 
 def addRouteConnections(analyzer,info):
     """
     Por cada vertice (cada estacion) se recorre la lista
@@ -114,25 +113,25 @@ def addRouteConnections(analyzer,info):
         if len(final) > 1:
             distancia = final[0]+ final[1]
     addEdge(grafo, origen, llegada,int(distancia))
-
+ 
             
 # Funciones para creacion de datos
-
+ 
 # Funciones de consulta
 def totalStops(analyzer):
     """
     Retorna el total de estaciones (vertices) del grafo
     """
     return gr.numVertices(analyzer['connections'])
-
-
+ 
+ 
 def totalConnections(analyzer):
     """
     Retorna el total arcos del grafo
     """
     return gr.numEdges(analyzer['connections'])
-
-
+ 
+ 
 #req 1
 def connectedComponents(analyzer):
     """
@@ -141,7 +140,7 @@ def connectedComponents(analyzer):
     """
     analyzer['components'] = scc.KosarajuSCC(analyzer['Arcos'])
     return scc.connectedComponents(analyzer['components'])
-
+ 
 #para mirar si hay camino
 def estan_closter(analyzer,pais1,pais2):
     Entry1 = mp.get(analyzer["landing_points"], pais1)
@@ -150,9 +149,9 @@ def estan_closter(analyzer,pais1,pais2):
     pais_2 = me.getValue(entry2)
     booleano = scc.stronglyConnected(analyzer["components"],str(Pais_1["landing_point_id"]),str(pais_2["landing_point_id"]))
     return booleano
-
+ 
 #req 2
-
+ 
 def servedRoutes(analyzer):
     iterador = it.newIterator(gr.vertices(analyzer["Arcos"]))
     lista = lt.newList()
@@ -173,23 +172,23 @@ def servedRoutes(analyzer):
         lt.addLast(final,valor["id"])
         lt.addLast(final,valor["name"])
     return total,final
-
+ 
 #req 3
-
+ 
 def minimumCostPaths(analyzer, pais1):
     """
     Calcula los caminos de costo mínimo desde la estacion initialStation
     a todos los demas vertices del grafo
     """
-    #Entry1 = mp.get(analyzer["paises_nombre"], pais1)
-    #Pais_id = me.getValue(Entry1)
-    analyzer['paths'] = djk.Dijkstra(analyzer['Arcos'], Pais_id)
+    Entry1 = mp.get(analyzer["paises_nombre"], pais1)
+    pais_1 = me.getValue(Entry1)
+    analyzer['paths'] = djk.Dijkstra(analyzer['Arcos'], pais_1)
     return analyzer
     
-
+ 
 def camino(analyzer,pais2):
-    #Entry1 = mp.get(analyzer["paises_nombre"], pais2)
-    #Pais_id = me.getValue(Entry1)
+    Entry1 = mp.get(analyzer["paises_nombre"], pais2)
+    Pais_id = me.getValue(Entry1)
     rta = djk.pathTo(analyzer["paths"],Pais_id)
     iterador = it.newIterator(rta)
     lista = lt.newList()
@@ -208,11 +207,13 @@ def camino(analyzer,pais2):
         dic["weight"] = weight
         lt.addLast(lista,dic)
     return lista
-
+ 
 def distancia_total(analyzer,pais2):
-    camino = djk.distTo(analyzer["paths"],pais2)
+    Entry1 = mp.get(analyzer["paises_nombre"], pais2)
+    Pais_id = me.getValue(Entry1)
+    camino = djk.distTo(analyzer["paths"],Pais_id)
     return camino
-
+ 
 #req 4
 def infraestructura_critica(analyzer):
     arbol = p.PrimMST(analyzer["Arcos"])
@@ -256,11 +257,12 @@ def inpacto_landing(analyzer, landing):
         lt.addLast(IDs, Pais["name"])
 
     return numero, IDs
-    
 
 
+ 
+ 
 # Funciones utilizadas para comparar elementos dentro de una lista
-
+ 
 # Funciones de ordenamiento
 def compareStopIds(stop, keyvaluestop):
     """
@@ -273,7 +275,6 @@ def compareStopIds(stop, keyvaluestop):
         return 1
     else:
         return -1
-
 def comparar_pesos(peso1, peso2):
 
     rta = True

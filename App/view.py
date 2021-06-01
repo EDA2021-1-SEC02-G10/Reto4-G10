@@ -1,4 +1,4 @@
-﻿"""
+﻿"""""
  * Copyright 2020, Departamento de sistemas y Computación, Universidad
  * de Los Andes
  *
@@ -19,16 +19,15 @@
  * You should have received a copy of the GNU General Public License
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
-
+ 
 import config as cf
 import sys
 import controller
 import threading
 from DISClib.ADT import list as lt
-from DISClib.Algorithms.Sorting import mergesort as merge
 from DISClib.DataStructures import listiterator as it
 assert cf
-
+ 
 servicefile_landing = 'landing_points.csv'
 servicefile_connections = 'connections.csv'
 servicefile_countries = 'countries.csv'
@@ -39,7 +38,7 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
-
+ 
 def printMenu():
     print("\n")
     print("*******************************************")
@@ -53,9 +52,9 @@ def printMenu():
     print("7- Conocer el impacto que tendría el fallo de un determinado landing point: ")
     print("0- Salir")
     print("*******************************************")
-
+ 
 catalog = None
-
+ 
 """
 Menu principal
 """
@@ -69,13 +68,12 @@ def thread_cycle():
         elif int(inputs[0]) == 2:
             print("\nInicializando....")
             controller.loadServices(cont)          
-
+ 
         elif int(inputs[0]) == 3:                      #req 1
-            landing_1= input("Nombre del landing point 1 (Ejem. Redondo Beach):")
-            landing_2= input("Nombre del landing point 2 (Ejem. Vung Tau):")
+            landing_1= input("Nombre del landing point 1 (Ejem. Redondo Beach- 4992):")
+            landing_2= input("Nombre del landing point 2 (Ejem. Vung Tau-6013):")
             clusteres = controller.connectedComponents(cont)
-            controller.minimumCostPaths(cont, landing_1)
-            landing_pints = controller.estan_closter(cont,landing_2)
+            landing_pints = controller.estan_closter(cont,landing_1,landing_2)
             print("")
             print("Número total de clústeres presentes en la red: " + str(clusteres))
             if landing_pints:
@@ -89,13 +87,26 @@ def thread_cycle():
             print(max_edge[0])
             print("lista de landing points")
             print(max_edge[1])
+ 
         elif int(inputs[0]) == 5:                      #req 3
-            Pais_1 = input("Primer país: ")
-            Pais_2 = input("Segundo país: ")
-            
+            Pais_1 = " " + input("Primer país eje: Colombia - 4315 : ")
+            Pais_2 = " " + input("Segundo país eje: Indonesia - 16660 : ")
+            controller.minimumCostPaths(cont, Pais_1)
+            camino = controller.camino(cont,Pais_2)
+            iterador = it.newIterator(camino)
+            print("Camino del primer pais al segundo pais:")
+            while it.hasNext(iterador):
+                elemento = it.next(iterador)
+                print(elemento)
+            distancia = controller.distancia_total(cont,Pais_2)
+            print("-------------------------------------------------------")
+            print("La distancia total entre los dos landing points es:")
+            print(distancia)
+ 
             
         elif int(inputs[0]) == 6:                      #req 4
             rta=controller.infraestructura_critica(cont)
+            
             
         elif int(inputs[0]) == 7:                      #req 5
             landing = input("Nombre del landing point (Ejem. Fortaleza):")
@@ -109,13 +120,15 @@ def thread_cycle():
                 Pais = str(it.next(iterador))
                 print(Pais)
             print("")
+            
         else:
             sys.exit(0)
     sys.exit(0)
-
+ 
 if __name__ == "__main__":
     print(sys.getrecursionlimit())
     threading.stack_size(67108864)  # 64MB stack
     sys.setrecursionlimit(2 ** 20)
     thread = threading.Thread(target=thread_cycle)
     thread.start()
+
