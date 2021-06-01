@@ -32,7 +32,10 @@ from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.ADT.graph import addEdge, gr, indegree, vertices
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Graphs import prim as p
 from DISClib.Algorithms.Sorting import mergesort as merge
+from DISClib.DataStructures import bst as tree
+
 from DISClib.Utils import error as error
 from DISClib.DataStructures import listiterator as it
 assert cf
@@ -217,20 +220,18 @@ def distancia_total(analyzer,pais2):
 #req 4
 def infraestructura_critica(analyzer):
     arbol = p.PrimMST(analyzer["Arcos"])
-    #costo_min = p.scan(analyzer["Arcos"])
-    #camino = p.edgesMST(analyzer["Arcos"])
     vertices = gr.numVertices(analyzer["Arcos"])
     Peso = p.weightMST(analyzer["Arcos"], arbol)
+    rama = p.edgesMST(analyzer["Arcos"], arbol)
+    rama = rama["edgeTo"]["table"]["elements"]
+    #iterador = it.newIterator(rama)
+    maximo = 0
+    for i in range(len(rama)):
+        valor = rama[i]["value"]
+        if (valor is not None) and (float(valor["weight"]) > maximo):
+            maximo = valor["weight"]
 
-    iterador = it.newIterator(arbol)
-    while it.hasNext(iterador):
-        Rama = edgesMST(analyzer["Arcos"], arbol)
-        print(Rama)
-
-
-
-    
-    return vertices, Peso
+    return vertices, Peso, maximo
 #req 5
 def inpacto_landing(analyzer, landing):
     Entry1 = mp.get(analyzer["landing_points"], landing)

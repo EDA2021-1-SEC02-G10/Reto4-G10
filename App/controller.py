@@ -86,7 +86,7 @@ def distancia_total(analyzer,pais2):
  
 #req 4
 def infraestructura_critica(analyzer):
-    return model.infraestructura_critica()
+    return model.infraestructura_critica(analyzer)
 #req 5
 def inpacto_landing(cont, landing):
     return model.inpacto_landing(cont, landing)

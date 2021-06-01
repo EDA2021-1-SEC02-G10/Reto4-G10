@@ -106,6 +106,12 @@ def thread_cycle():
             
         elif int(inputs[0]) == 6:                      #req 4
             rta=controller.infraestructura_critica(cont)
+            print("")
+            print("El número de nodos conectados a la red de expansión mínima es: " + str(rta[0]))
+            print("El costo total (distancia en [km]) de la red de expansión mínima es: " + str(rta[1]) + " Km")
+            print("La rama más larga que hace parte de la red de expansión mínima es: " + str(rta[2]))
+            print("")
+
             
             
         elif int(inputs[0]) == 7:                      #req 5
