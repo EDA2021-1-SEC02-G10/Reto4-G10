@@ -25,6 +25,7 @@ import sys
 import controller
 import threading
 from DISClib.ADT import list as lt
+from DISClib.Algorithms.Sorting import mergesort as merge
 from DISClib.DataStructures import listiterator as it
 assert cf
 
@@ -70,8 +71,8 @@ def thread_cycle():
             controller.loadServices(cont)          
 
         elif int(inputs[0]) == 3:                      #req 1
-            landing_1= input("Nombre del landing point 1 (Ejem. Redondo Beach- 4992):")
-            landing_2= input("Nombre del landing point 2 (Ejem. Vung Tau-6013):")
+            landing_1= input("Nombre del landing point 1 (Ejem. Redondo Beach):")
+            landing_2= input("Nombre del landing point 2 (Ejem. Vung Tau):")
             clusteres = controller.connectedComponents(cont)
             controller.minimumCostPaths(cont, landing_1)
             landing_pints = controller.estan_closter(cont,landing_2)
@@ -97,9 +98,17 @@ def thread_cycle():
             rta=controller.infraestructura_critica(cont)
             
         elif int(inputs[0]) == 7:                      #req 5
-            landing = input("Nombre del landing point:")
+            landing = input("Nombre del landing point (Ejem. Fortaleza):")
             rta=controller.inpacto_landing(cont, landing)
-            
+            print("")
+            print("EL número de paises es: " + str(rta[0]))
+            print("Los paises son: ")
+            print("")
+            iterador = it.newIterator(rta[1])
+            while it.hasNext(iterador):
+                Pais = str(it.next(iterador))
+                print(Pais)
+            print("")
         else:
             sys.exit(0)
     sys.exit(0)

@@ -88,8 +88,8 @@ def minimumCostPath(analyzer, destStation):
 def infraestructura_critica(analyzer):
     return model.infraestructura_critica()
 #req 5
-def inpacto_landing(landing):
-    return model.inpacto_landing(landing)
+def inpacto_landing(cont, landing):
+    return model.inpacto_landing(cont, landing)
 
 
 # Funciones de ordenamiento

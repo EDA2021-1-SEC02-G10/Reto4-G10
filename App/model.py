@@ -29,6 +29,7 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as merge
 from DISClib.ADT.graph import addEdge, gr, indegree, vertices
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
@@ -82,6 +83,7 @@ def addinfo_ciudad(analyzer,info):
 
 def addinfo_codigo(analyzer,info):
     mp.put(analyzer["paises_codigos"],str(info["landing_point_id"]),info)
+
 
 def addStop(analyzer, stopid):
     """
@@ -213,12 +215,48 @@ def distancia_total(analyzer,pais2):
 
 #req 4
 def infraestructura_critica(analyzer):
-    prim = P.PrimMST(analyzer["Arcos"])
-    minimos = lt.size(prim)
-    return minimos
+    arbol = p.PrimMST(analyzer["Arcos"])
+    #costo_min = p.scan(analyzer["Arcos"])
+    #camino = p.edgesMST(analyzer["Arcos"])
+    vertices = gr.numVertices(analyzer["Arcos"])
+    Peso = p.weightMST(analyzer["Arcos"], arbol)
+
+    iterador = it.newIterator(arbol)
+    while it.hasNext(iterador):
+        Rama = edgesMST(analyzer["Arcos"], arbol)
+        print(Rama)
+
+
+
+    
+    return vertices, Peso
 #req 5
-def inpacto_landing(landing):
-    return None
+def inpacto_landing(analyzer, landing):
+    Entry1 = mp.get(analyzer["landing_points"], landing)
+    Pais_id = me.getValue(Entry1)
+    numero = gr.indegree(analyzer["Arcos"],str(Pais_id["landing_point_id"]))
+    paises_id = gr.adjacentEdges(analyzer["Arcos"], str(Pais_id["landing_point_id"]))
+
+
+    iterador = it.newIterator(paises_id)
+    pesos = lt.newList()
+    while it.hasNext(iterador):
+        Pais_id = it.next(iterador)
+        lt.addLast(pesos, Pais_id)
+    merge.sort(pesos, comparar_pesos)
+
+    iterador_2 = it.newIterator(pesos)
+    IDs = lt.newList()
+    Paises = lt.newList()
+    while it.hasNext(iterador_2):
+        Pais_id = it.next(iterador_2)
+        vertice_id = Pais_id["vertexB"]
+        Entry2 = mp.get(analyzer["paises_codigos"], vertice_id)
+        Pais = me.getValue(Entry2)
+        lt.addLast(IDs, Pais["name"])
+
+    return numero, IDs
+    
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -235,3 +273,10 @@ def compareStopIds(stop, keyvaluestop):
         return 1
     else:
         return -1
+
+def comparar_pesos(peso1, peso2):
+
+    rta = True
+    if int(peso1["weight"]) < int(peso2["weight"]):
+        rta = False
+    return rta
