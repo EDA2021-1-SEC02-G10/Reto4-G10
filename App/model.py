@@ -77,8 +77,8 @@ def addinfo_landing(analyzer,info):
 
 def addinfo_ciudad(analyzer,info):
     nombre = str(info["name"]).split(",")
-    nombre_landing = str(nombre[-1])
-    mp.put(analyzer["paises_nombre"],nombre_landing,info)
+    nombre_pais = str(nombre[-1])
+    mp.put(analyzer["paises_nombre"],str(info["landing_point_id"]),nombre_pais)
 
 def addinfo_codigo(analyzer,info):
     mp.put(analyzer["paises_codigos"],str(info["landing_point_id"]),info)
@@ -140,24 +140,14 @@ def connectedComponents(analyzer):
     analyzer['components'] = scc.KosarajuSCC(analyzer['Arcos'])
     return scc.connectedComponents(analyzer['components'])
 
-#para mirar si hay camino# tambien se usa para el req 3
-
-def minimumCostPaths(analyzer, pais1):
-    """
-    Calcula los caminos de costo mínimo desde la estacion initialStation
-    a todos los demas vertices del grafo
-    """
+#para mirar si hay camino
+def estan_closter(analyzer,pais1,pais2):
     Entry1 = mp.get(analyzer["landing_points"], pais1)
-    Pais_id = me.getValue(Entry1)
-    analyzer['paths'] = djk.Dijkstra(analyzer['Arcos'], str(Pais_id["landing_point_id"]))
-    return analyzer
-    
-
-def estan_closter(analyzer,pais2):
-    Entry1 = mp.get(analyzer["landing_points"], pais2)
-    Pais_id = me.getValue(Entry1)
-    rta = djk.hasPathTo(analyzer["paths"],str(Pais_id["landing_point_id"]))
-    return rta
+    Pais_1 = me.getValue(Entry1)
+    entry2 = mp.get(analyzer["landing_points"],pais2)
+    pais_2 = me.getValue(entry2)
+    booleano = scc.stronglyConnected(analyzer["components"],str(Pais_1["landing_point_id"]),str(pais_2["landing_point_id"]))
+    return booleano
 
 #req 2
 
@@ -184,9 +174,42 @@ def servedRoutes(analyzer):
 
 #req 3
 
-def ruta(analyzer,pais1):
-    distancia_total = djk.distTo(analyzer["path"],pais1)
+def minimumCostPaths(analyzer, pais1):
+    """
+    Calcula los caminos de costo mínimo desde la estacion initialStation
+    a todos los demas vertices del grafo
+    """
+    #Entry1 = mp.get(analyzer["paises_nombre"], pais1)
+    #Pais_id = me.getValue(Entry1)
+    analyzer['paths'] = djk.Dijkstra(analyzer['Arcos'], Pais_id)
+    return analyzer
+    
 
+def camino(analyzer,pais2):
+    #Entry1 = mp.get(analyzer["paises_nombre"], pais2)
+    #Pais_id = me.getValue(Entry1)
+    rta = djk.pathTo(analyzer["paths"],Pais_id)
+    iterador = it.newIterator(rta)
+    lista = lt.newList()
+    while it.hasNext(iterador):
+        dic = {}
+        elemento = it.next(iterador)
+        vertex_a = elemento["vertexA"]
+        pais_a_pareja = mp.get(analyzer["paises_codigos"],vertex_a)
+        nommbre_paisa = me.getValue(pais_a_pareja)
+        vertex_b = elemento["vertexB"]
+        pais_b_pareja = mp.get(analyzer["paises_codigos"],vertex_b)
+        nombre_paisb = me.getValue(pais_b_pareja)
+        weight = elemento["weight"]
+        dic["vertexA"] = nommbre_paisa["name"]
+        dic["vertexB"] = nombre_paisb["name"]
+        dic["weight"] = weight
+        lt.addLast(lista,dic)
+    return lista
+
+def distancia_total(analyzer,pais2):
+    camino = djk.distTo(analyzer["paths"],pais2)
+    return camino
 
 #req 4
 def infraestructura_critica(analyzer):
