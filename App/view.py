@@ -50,6 +50,8 @@ def printMenu():
     print("5- Encontrar la ruta mínima entre dos paices: ")
     print("6- identificar la infraestructura crítica: ")
     print("7- Conocer el impacto que tendría el fallo de un determinado landing point: ")
+    print("8- Conocer el ancho de banda máximo:")
+    print("9- Encontrar la ruta mínima en número de saltos:")
     print("0- Salir")
     print("*******************************************")
  
@@ -126,7 +128,16 @@ def thread_cycle():
                 Pais = str(it.next(iterador))
                 print(Pais)
             print("")
-            
+        elif int(inputs[0]) == 8:                     #req 6
+            pais = input("Nombre del país: ")
+            cable = input("Nombre del cable: ")
+            rta =controller.ancho_de_banda(cont, pais, cable)
+            print(rta)
+        elif int(inputs[0]) == 9:                     #req 7                     
+            ruta_1 = input("Ingrese la Dirección IP1 (Ejem. 165.132.67.89 ): ")
+            ruta_2 = input("Ingrese la Dirección IP2 (Ejem. 8.8.8.8): ")
+            rta =controller.saltos_minimos(cont, ruta_1, ruta_2)
+            print(rta) 
         else:
             sys.exit(0)
     sys.exit(0)

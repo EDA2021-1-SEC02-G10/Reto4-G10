@@ -163,6 +163,7 @@ def servedRoutes(analyzer):
         vertice = it.next(iterador)
         indegree = gr.indegree(analyzer["Arcos"],vertice)
         outdegree = gr.outdegree(analyzer["Arcos"],vertice)
+
         if indegree >= 1 and outdegree > 1:
             total += 1
             lt.addLast(lista,vertice)
@@ -175,6 +176,8 @@ def servedRoutes(analyzer):
         lt.addLast(final,valor["id"])
         lt.addLast(final,valor["name"])
     return total,final
+    #return 0, analyzer["Arcos"]
+    
  
 #req 3
  
@@ -250,16 +253,27 @@ def inpacto_landing(analyzer, landing):
     iterador_2 = it.newIterator(pesos)
     IDs = lt.newList()
     Paises = lt.newList()
+    unicos = 0
     while it.hasNext(iterador_2):
         Pais_id = it.next(iterador_2)
         vertice_id = Pais_id["vertexB"]
         Entry2 = mp.get(analyzer["paises_codigos"], vertice_id)
-        Pais = me.getValue(Entry2)
-        lt.addLast(IDs, Pais["name"])
+        Pais_ciudad = me.getValue(Entry2)
+        nombre = str(Pais_ciudad["name"]).split(",")
+        nombre_pais = str(nombre[-1])
+        if not lt.isPresent(IDs,nombre_pais):
+            lt.addLast(IDs, nombre_pais)
+            unicos += 1
 
-    return numero, IDs
+    return unicos, IDs
 
+#req 6
+def ancho_de_banda(cont, pais, cable):
 
+    return None
+#req 7
+def saltos_minimos(cont, ruta_1, ruta_2):
+    return None
  
  
 # Funciones utilizadas para comparar elementos dentro de una lista

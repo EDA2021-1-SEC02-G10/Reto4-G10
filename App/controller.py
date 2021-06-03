@@ -90,7 +90,12 @@ def infraestructura_critica(analyzer):
 #req 5
 def inpacto_landing(cont, landing):
     return model.inpacto_landing(cont, landing)
- 
+#req 6
+def ancho_de_banda(cont, pais, cable):
+    return model.ancho_de_banda(cont, pais, cable)
+#req 7
+def saltos_minimos(cont, ruta_1, ruta_2):
+    return model.saltos_minimos(cont, ruta_1, ruta_2)
  
 # Funciones de ordenamiento
  
