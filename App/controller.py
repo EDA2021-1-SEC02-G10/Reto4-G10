@@ -44,9 +44,13 @@ def loadServices(cont):
     """
     servicesfile = cf.data_dir + 'connections.csv'
     servicesfile_1 = cf.data_dir + 'landing_points.csv'
+    servicesfile_2 = cf.data_dir + 'countries.csv'
+
     input_file = csv.DictReader(open(servicesfile, encoding="utf-8-sig"),
                                 delimiter=",")
     input_file_1 = csv.DictReader(open(servicesfile_1, encoding="utf-8"),
+                                delimiter=",")
+    input_file_2 = csv.DictReader(open(servicesfile_2, encoding="utf-8"),
                                 delimiter=",")
     for cable in input_file:
         model.addRouteConnections(cont,cable)
@@ -54,13 +58,24 @@ def loadServices(cont):
         model.addinfo_landing(cont,info)
         model.addinfo_ciudad(cont,info)
         model.addinfo_codigo(cont,info)
+    for info in input_file_2:
+        model.addinfo_countries(cont,info)
+
+    
     return cont
  
 # Funciones para la carga de datos
 def init():
     analyzer = model.newAnalyzer()
     return analyzer
- 
+
+# Funciones de consulta
+
+def sacar_info(analyzer):
+    return model.sacar_info(analyzer)
+
+
+#############################################
 #req 1
 def connectedComponents(analyzer):
     """

@@ -69,7 +69,19 @@ def thread_cycle():
             cont = controller.init()
         elif int(inputs[0]) == 2:
             print("\nInicializando....")
-            controller.loadServices(cont)          
+            controller.loadServices(cont)
+            rta = controller.sacar_info(cont)  
+            print("*******************************************")
+            print (str("-El total de landing points es: " + str(rta[0]))) 
+            print (str("-El total de conexiones entre landing points  es: " + str(rta[1])))
+            print (str("-El total de países  es:" + str(rta[2])))
+            print(str("-La información del primer landing point es: "))
+            print(str("     ") + str(rta[3]))
+            print (str("-La población del último país cargado es: " + str(rta[4])))
+            print (str("-El número usuarios de Internet del último país cargado es: " + str(rta[5])))
+
+            print("*******************************************")
+
  
         elif int(inputs[0]) == 3:                      #req 1
             landing_1= input("Nombre del landing point 1 (Ejem. Redondo Beach- 4992):")

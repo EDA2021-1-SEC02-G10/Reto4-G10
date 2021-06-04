@@ -24,6 +24,7 @@
  * Dario Correal - Version inicial
  """
  
+from DISClib.DataStructures.linkedlistiterator import hasNext
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -66,9 +67,10 @@ def newAnalyzer():
                                               directed=True,
                                               size=14000,
                                               comparefunction=compareStopIds)
-        analyzer["landing_points"] = mp.newMap()
-        analyzer["paises_nombre"] = mp.newMap()
-        analyzer["paises_codigos"] = mp.newMap()
+        analyzer["landing_points"] = mp.newMap()        # llave: nombre_ciudad / valor: linea
+        analyzer["paises_nombre"] = mp.newMap()         # llave: nombre_pais / valor: landing_point_id
+        analyzer["paises_codigos"] = mp.newMap()        # llave: landing_point_id / valor: linea
+        analyzer["countries"] = mp.newMap()             # llave Capital Name / valor linea
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -86,7 +88,10 @@ def addinfo_ciudad(analyzer,info):
  
 def addinfo_codigo(analyzer,info):
     mp.put(analyzer["paises_codigos"],str(info["landing_point_id"]),info)
- 
+
+def addinfo_countries(analyzer,info):
+    mp.put(analyzer["countries"],str(info["CountryName"]),info)
+    
 def addStop(analyzer, stopid):
     """
     Adiciona una estación como un vertice del grafo
@@ -121,20 +126,28 @@ def addRouteConnections(analyzer,info):
 # Funciones para creacion de datos
  
 # Funciones de consulta
-def totalStops(analyzer):
-    """
-    Retorna el total de estaciones (vertices) del grafo
-    """
-    return gr.numVertices(analyzer['connections'])
- 
- 
-def totalConnections(analyzer):
-    """
-    Retorna el total arcos del grafo
-    """
-    return gr.numEdges(analyzer['connections'])
- 
- 
+
+def sacar_info(analyzer):
+    vertices = gr.numVertices(analyzer['Arcos'])
+    arcos = gr.numEdges(analyzer['Arcos'])
+    paises = mp.keySet(analyzer["paises_nombre"])
+    Num_paises = lt.size(paises)
+    landings = mp.valueSet(analyzer['landing_points'])
+    landing = lt.firstElement(landings)
+    ciudades = mp.valueSet(analyzer['countries'])
+    ciudad = lt.lastElement(ciudades)
+    poblacion = ciudad ["Population"]
+    usuarios = ciudad ["Internet users"]
+    
+
+        
+
+    return  vertices, arcos, Num_paises, landing, poblacion, usuarios
+
+
+
+############################################################################################
+
 #req 1
 def connectedComponents(analyzer):
     """
@@ -176,7 +189,6 @@ def servedRoutes(analyzer):
         lt.addLast(final,valor["id"])
         lt.addLast(final,valor["name"])
     return total,final
-    #return 0, analyzer["Arcos"]
     
  
 #req 3
@@ -227,7 +239,7 @@ def infraestructura_critica(analyzer):
     Peso = p.weightMST(analyzer["Arcos"], arbol)
     rama = p.edgesMST(analyzer["Arcos"], arbol)
     rama = rama["edgeTo"]["table"]["elements"]
-    #iterador = it.newIterator(rama)
+
     maximo = 0
     for i in range(len(rama)):
         valor = rama[i]["value"]
@@ -252,8 +264,8 @@ def inpacto_landing(analyzer, landing):
 
     iterador_2 = it.newIterator(pesos)
     IDs = lt.newList()
-    Paises = lt.newList()
     unicos = 0
+    
     while it.hasNext(iterador_2):
         Pais_id = it.next(iterador_2)
         vertice_id = Pais_id["vertexB"]
