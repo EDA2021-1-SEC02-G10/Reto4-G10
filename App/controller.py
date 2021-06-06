@@ -52,14 +52,18 @@ def loadServices(cont):
                                 delimiter=",")
     input_file_2 = csv.DictReader(open(servicesfile_2, encoding="utf-8"),
                                 delimiter=",")
+    llave = 1
     for cable in input_file:
-        model.addRouteConnections(cont,cable)
+        model.addinfo_cables_origen(cont,llave,cable)       #analyzer["cables_origen"]
+        llave += 1
+        model.addRouteConnections(cont,cable)        
     for info in input_file_1:
-        model.addinfo_landing(cont,info)
-        model.addinfo_ciudad(cont,info)
-        model.addinfo_codigo(cont,info)
-    for info in input_file_2:
-        model.addinfo_countries(cont,info)
+        model.addinfo_landing(cont,info)                    #analyzer["landing_points"]
+        model.addinfo_ciudad(cont,info)                     #analyzer["paises_nombre"]
+        model.addinfo_codigo(cont,info)                     #analyzer["paises_codigos"]
+        model.addinfo_ciudad_pais(cont,info)                #analyzer["ciudad_pais"]
+    for info in input_file_2:                               
+        model.addinfo_countries(cont,info)                  #analyzer["countries"]
 
     
     return cont

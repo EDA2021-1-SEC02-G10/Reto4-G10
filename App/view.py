@@ -41,7 +41,7 @@ operación solicitada
  
 def printMenu():
     print("\n")
-    print("*******************************************")
+    print("***************")
     print("Bienvenido")
     print("1- Inicializar Analizador")
     print("2- Cargar información")
@@ -53,7 +53,7 @@ def printMenu():
     print("8- Conocer el ancho de banda máximo:")
     print("9- Encontrar la ruta mínima en número de saltos:")
     print("0- Salir")
-    print("*******************************************")
+    print("***************")
  
 catalog = None
  
@@ -71,7 +71,7 @@ def thread_cycle():
             print("\nInicializando....")
             controller.loadServices(cont)
             rta = controller.sacar_info(cont)  
-            print("*******************************************")
+            print("***************")
             print (str("-El total de landing points es: " + str(rta[0]))) 
             print (str("-El total de conexiones entre landing points  es: " + str(rta[1])))
             print (str("-El total de países  es:" + str(rta[2])))
@@ -80,7 +80,7 @@ def thread_cycle():
             print (str("-La población del último país cargado es: " + str(rta[4])))
             print (str("-El número usuarios de Internet del último país cargado es: " + str(rta[5])))
 
-            print("*******************************************")
+            print("***************")
 
  
         elif int(inputs[0]) == 3:                      #req 1
@@ -88,6 +88,7 @@ def thread_cycle():
             landing_2= input("Nombre del landing point 2 (Ejem. Vung Tau-6013):")
             clusteres = controller.connectedComponents(cont)
             landing_pints = controller.estan_closter(cont,landing_1,landing_2)
+            print("-------------------------------------------------------")
             print("")
             print("Número total de clústeres presentes en la red: " + str(clusteres))
             if landing_pints:
@@ -96,11 +97,20 @@ def thread_cycle():
                 print(" los dos landing points NO están en el mismo clúster")
             
         elif int(inputs[0]) == 4:                      #req 2
-            max_edge=controller.servedRoutes(cont)
-            print("El total de cables conectados a dichos landiing points son:")
-            print(max_edge[0])
-            print("lista de landing points")
-            print(max_edge[1])
+            rta=controller.servedRoutes(cont)
+            print("-------------------------------------------------------")
+            print("lista de landing points: ")
+            iterador_1 =it.newIterator(rta[1])
+            iterador_2 =it.newIterator(rta[2])
+            while it.hasNext(iterador_1) and it.hasNext(iterador_2):
+                nombre = it.next(iterador_1)
+                id = it.next(iterador_2)
+                print("")
+                print("Nombre y pais del landing point: " + str(nombre))
+                print("ID del landing point: " + str(id))
+            print("")
+            print("")
+            print("El total de cables conectados a dichos landiing points son:" + str(rta[0]))
  
         elif int(inputs[0]) == 5:                      #req 3
             Pais_1 = " " + input("Primer país eje: Colombia - 4315 : ")
@@ -108,18 +118,21 @@ def thread_cycle():
             controller.minimumCostPaths(cont, Pais_1)
             camino = controller.camino(cont,Pais_2)
             iterador = it.newIterator(camino)
+            print("-------------------------------------------------------")
             print("Camino del primer pais al segundo pais:")
             while it.hasNext(iterador):
                 elemento = it.next(iterador)
                 print(elemento)
             distancia = controller.distancia_total(cont,Pais_2)
-            print("-------------------------------------------------------")
+            print("")
+            print("")
             print("La distancia total entre los dos landing points es:")
             print(distancia)
  
             
         elif int(inputs[0]) == 6:                      #req 4
             rta=controller.infraestructura_critica(cont)
+            print("-------------------------------------------------------")
             print("")
             print("El número de nodos conectados a la red de expansión mínima es: " + str(rta[0]))
             print("El costo total (distancia en [km]) de la red de expansión mínima es: " + str(rta[1]) + " Km")
@@ -131,6 +144,7 @@ def thread_cycle():
         elif int(inputs[0]) == 7:                      #req 5
             landing = input("Nombre del landing point (Ejem. Fortaleza):")
             rta=controller.inpacto_landing(cont, landing)
+            print("-------------------------------------------------------")
             print("")
             print("EL número de paises es: " + str(rta[0]))
             print("Los paises son: ")
@@ -141,14 +155,27 @@ def thread_cycle():
                 print(Pais)
             print("")
         elif int(inputs[0]) == 8:                     #req 6
-            pais = input("Nombre del país: ")
-            cable = input("Nombre del cable: ")
+            pais =  input("Nombre del país (Ejem. Cuba): ")
+            cable = input("Nombre del cable (Ejem. ALBA-1): ")
             rta =controller.ancho_de_banda(cont, pais, cable)
-            print(rta)
+            iterador = it.newIterator(rta[0])
+            iterador_2 = it.newIterator(rta[1])
+            print("-------------------------------------------------------")
+            while it.hasNext(iterador) and it.hasNext(iterador_2):
+                nombre = it.next(iterador)
+                ancho_banda = it.next(iterador_2)
+                print("")
+                print("Nombre del Pais Conectado: " + str(nombre))
+                print("Ancho de banda: " + str(ancho_banda) + " 𝑀𝑏𝑝s")
+                print("")
+            
+            
+            
         elif int(inputs[0]) == 9:                     #req 7                     
             ruta_1 = input("Ingrese la Dirección IP1 (Ejem. 165.132.67.89 ): ")
             ruta_2 = input("Ingrese la Dirección IP2 (Ejem. 8.8.8.8): ")
             rta =controller.saltos_minimos(cont, ruta_1, ruta_2)
+            print("-------------------------------------------------------")
             print(rta) 
         else:
             sys.exit(0)
@@ -160,4 +187,3 @@ if __name__ == "__main__":
     sys.setrecursionlimit(2 ** 20)
     thread = threading.Thread(target=thread_cycle)
     thread.start()
-

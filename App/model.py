@@ -23,8 +23,7 @@
  *
  * Dario Correal - Version inicial
  """
- 
-from DISClib.DataStructures.linkedlistiterator import hasNext
+
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -70,7 +69,10 @@ def newAnalyzer():
         analyzer["landing_points"] = mp.newMap()        # llave: nombre_ciudad / valor: linea
         analyzer["paises_nombre"] = mp.newMap()         # llave: nombre_pais / valor: landing_point_id
         analyzer["paises_codigos"] = mp.newMap()        # llave: landing_point_id / valor: linea
-        analyzer["countries"] = mp.newMap()             # llave Capital Name / valor linea
+        analyzer["countries"] = mp.newMap()             # llave CountryName / valor: linea
+        analyzer["cables_origen"] = mp.newMap()         # llave: Num. de llegada / valor: linea
+        analyzer["ciudad_pais"] = mp.newMap()           # llave: name / valor: linea
+        
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -91,6 +93,12 @@ def addinfo_codigo(analyzer,info):
 
 def addinfo_countries(analyzer,info):
     mp.put(analyzer["countries"],str(info["CountryName"]),info)
+
+def addinfo_cables_origen(analyzer,llave, info):
+    mp.put(analyzer["cables_origen"],str(llave),info)
+
+def addinfo_ciudad_pais(analyzer,info):
+    mp.put(analyzer["ciudad_pais"],str(info["name"]),info)
     
 def addStop(analyzer, stopid):
     """
@@ -180,15 +188,18 @@ def servedRoutes(analyzer):
         if indegree >= 1 and outdegree > 1:
             total += 1
             lt.addLast(lista,vertice)
-    final = lt.newList()
+    nombres = lt.newList()
+    IDs = lt.newList()
     iterador_1 = it.newIterator(lista)
     while it.hasNext(iterador_1):
         elemento = it.next(iterador_1)
         pareja = mp.get(analyzer["paises_codigos"],elemento)
         valor = me.getValue(pareja)
-        lt.addLast(final,valor["id"])
-        lt.addLast(final,valor["name"])
-    return total,final
+        id = valor["landing_point_id"]
+        name = valor["name"]
+        lt.addLast(nombres,name)
+        lt.addLast(IDs,id)
+    return total,nombres,IDs
     
  
 #req 3
@@ -225,6 +236,7 @@ def camino(analyzer,pais2):
         dic["weight"] = weight
         lt.addLast(lista,dic)
     return lista
+    
  
 def distancia_total(analyzer,pais2):
     Entry1 = mp.get(analyzer["paises_nombre"], pais2)
@@ -251,7 +263,6 @@ def infraestructura_critica(analyzer):
 def inpacto_landing(analyzer, landing):
     Entry1 = mp.get(analyzer["landing_points"], landing)
     Pais_id = me.getValue(Entry1)
-    numero = gr.indegree(analyzer["Arcos"],str(Pais_id["landing_point_id"]))
     paises_id = gr.adjacentEdges(analyzer["Arcos"], str(Pais_id["landing_point_id"]))
 
 
@@ -276,15 +287,84 @@ def inpacto_landing(analyzer, landing):
         if not lt.isPresent(IDs,nombre_pais):
             lt.addLast(IDs, nombre_pais)
             unicos += 1
-
     return unicos, IDs
 
 #req 6
-def ancho_de_banda(cont, pais, cable):
+def ancho_de_banda(analyzer, pais, cable):
 
-    return None
+    #sacar IDs de Cuba
+    llaves = mp.keySet(analyzer["ciudad_pais"])
+    iterador = it.newIterator(llaves)
+    llaves_filtradas = lt.newList()
+    IDs_Cuba = lt.newList()
+    
+    while it.hasNext(iterador):
+        llave = it.next(iterador)
+        Entry3 = mp.get(analyzer["ciudad_pais"], llave)
+        valor_Entry3 = me.getValue(Entry3)
+        ID = valor_Entry3["landing_point_id"]
+        if pais in llave:
+            lt.addLast(llaves_filtradas, llave)
+            lt.addLast(IDs_Cuba, ID)  # 17027 14733 8351 
+
+    #sacar visitas            sacarTBBS y todas ids 
+    cables_filtrados = lt.newList()
+    conexiones = mp.valueSet(analyzer["cables_origen"])
+    iterador_2 = it.newIterator(conexiones)
+    while it.hasNext(iterador_2):
+        elemento = it.next(iterador_2)
+        if cable == elemento["cable_name"]:
+            lt.addLast(cables_filtrados, elemento)
+        
+
+    #sacar IDs de otros paises y definir calidad 
+    IDs_visitas = lt.newList()
+    iterador_3 = it.newIterator(cables_filtrados)
+    while it.hasNext(iterador_3):
+        elemento = it.next(iterador_3)
+        ID = elemento["origin"]
+        if not (lt.isPresent(IDs_Cuba, ID)):
+            if not (lt.isPresent(IDs_visitas, ID)):
+                lt.addLast(IDs_visitas, ID)
+                calidad = elemento["capacityTBPS"]
+    
+    #sacar nombre otros paises 
+    iterador_4 = it.newIterator(IDs_visitas)
+    nombres_visita = lt.newList()
+    while it.hasNext(iterador_4):
+        elemento = it.next(iterador_4)
+        linea = mp.get(analyzer["paises_codigos"], elemento)
+        valor_linea = me.getValue(linea)
+        lt.addLast(nombres_visita, valor_linea["name"])
+
+    #sacar usuarios 
+    iterador_5 = it.newIterator(nombres_visita)
+    usuarios = lt.newList()
+    while it.hasNext(iterador_5):
+        elemento = it.next(iterador_5)
+        nombre = str(elemento).split(",")
+        pais = str(nombre[-1])
+        pais = list(pais)
+        pais.pop(0)
+        pais = "".join(pais)
+        print(pais)
+
+        info_pais = mp.get(analyzer["countries"], pais)
+        linea_pais = me.getValue(info_pais)
+        n_usuarios = linea_pais["Internet users"]
+        lt.addLast(usuarios, n_usuarios)
+
+    #hacer operacion
+    iterador_6 = it.newIterator(usuarios)
+    anchos_de_banda = lt.newList()
+    while it.hasNext(iterador_6):
+        elemento = it.next(iterador_6)
+        ancho_de_banda = float(calidad)/ float(elemento)
+        lt.addLast(anchos_de_banda, ancho_de_banda)
+
+    return nombres_visita, anchos_de_banda
 #req 7
-def saltos_minimos(cont, ruta_1, ruta_2):
+def saltos_minimos(analyzer, ruta_1, ruta_2):
     return None
  
  
