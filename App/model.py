@@ -257,8 +257,18 @@ def infraestructura_critica(analyzer):
         valor = rama[i]["value"]
         if (valor is not None) and (float(valor["weight"]) > maximo):
             maximo = valor["weight"]
+            vertice1 = valor["vertexA"]
+            vertice2 = valor["vertexB"]
+    
+    cables = mp.valueSet(analyzer["cables_origen"])
+    iterador = it.newIterator(cables)
+    while it.hasNext(iterador):
+        elemento = it.next(iterador)
+        if elemento["origin"] == vertice1 and vertice2 == elemento["destination"]:
+            cable = elemento["cable_name"]
 
-    return vertices, Peso, maximo
+
+    return vertices, Peso,cable, maximo
 #req 5
 def inpacto_landing(analyzer, landing):
     Entry1 = mp.get(analyzer["landing_points"], landing)

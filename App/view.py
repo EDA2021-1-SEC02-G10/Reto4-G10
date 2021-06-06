@@ -113,8 +113,8 @@ def thread_cycle():
             print("El total de cables conectados a dichos landiing points son:" + str(rta[0]))
  
         elif int(inputs[0]) == 5:                      #req 3
-            Pais_1 = " " + input("Primer país eje: Colombia - 4315 : ")
-            Pais_2 = " " + input("Segundo país eje: Indonesia - 16660 : ")
+            Pais_1 = " " + input("Primer país (Eje. Colombia) : ")
+            Pais_2 = " " + input("Segundo país (Eje. Indonesia) : ")
             controller.minimumCostPaths(cont, Pais_1)
             camino = controller.camino(cont,Pais_2)
             iterador = it.newIterator(camino)
@@ -136,8 +136,9 @@ def thread_cycle():
             print("")
             print("El número de nodos conectados a la red de expansión mínima es: " + str(rta[0]))
             print("El costo total (distancia en [km]) de la red de expansión mínima es: " + str(rta[1]) + " Km")
-            print("La rama más larga que hace parte de la red de expansión mínima es: " + str(rta[2]))
+            print("La rama más larga es " + str(rta[2]) + " con una longitud de " + str(rta[3]) + " km")
             print("")
+            
 
             
             
